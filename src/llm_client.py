@@ -19,11 +19,25 @@ class SQLGenerator:
                 - utm_source (TEXT): источник трафика ('yandex', 'vkads', 'telegram', 'hybrid', 'soloway', 'mintegral', 'organic')
                 - event_type (TEXT): тип события ('page_view', 'ib_draft_created', 'sdelka_draft_created')
                 - user_id (TEXT): уникальный ID пользователя (UUID)
+            Разбивки:
+            каналы - utm_source
+            неделя - date(session_date, 'weekday 1')
+            месяц - date('now','start of month','+0 month')
+            год - date(session_date, 'start_of_year')
+            Метрики:
+            Черновики Сделка - COUNT(CASE WHEN event_type = 'sdelka_draft_created' THEN 1 ELSE NULL END)
+            Черновики ИБ - COUNT(CASE WHEN event_type = 'ib_draft_created' THEN 1 ELSE NULL END)
+            Черновики - COUNT(CASE WHEN event_type != 'page_view' THEN 1 ELSE NULL END)
+            Сессии - COUNT(DISTINCT CASE WHEN event_type = 'page_view' session_id 1 ELSE NULL END)
+            Уники - COUNT(DISTINCT CASE WHEN event_type = 'page_view' client_id 1 ELSE NULL END)
+            Юзеры с Черновиком - COUNT(DISTINCT CASE WHEN event_type != 'page_view' THEN user_id ELSE NULL END)
             Правила:
             1. Пиши ТОЛЬКО чистый SQL-код для SQLite.
-            2. Не используй Markdown (```).
-            3. Если тебя просят 'отфильтровать' или 'добавить', учитывай предыдущие запросы.
-            4. Запрещены любые команды кроме SELECT."""
+            2. Метрики считай только по формулам выше.
+            3. Не используй Markdown (```).
+            4. Если тебя просят 'отфильтровать' или 'добавить', учитывай предыдущие запросы.
+            5. Если тебя просят поправить предыдущий запрос и присылают код ошибки - сделай коррекцию, но не добавляй никаких комментариев.
+            6. Запрещены любые команды кроме SELECT."""
         }
 
         # Здесь будет храниться история текущей сессии
